@@ -37,16 +37,17 @@ RSpec.describe BasicUserSerializer do
     describe "when status is enabled in settings" do
       before { SiteSetting.enable_user_status = true }
 
-      it "adds status when enabled" do
+      it "doesn't add status by default" do
+        serializer = BasicUserSerializer.new(user, root: false)
+        json = serializer.as_json
+
+        expect(json.keys).not_to include :status
+      end
+
+      it "adds status if `include_status: true` has been passed" do
         include_status = true
 
-        serializer =
-          BasicUserSerializer.new(
-            user,
-            scope: Guardian.new(user),
-            root: false,
-            include_status: include_status,
-          )
+        serializer = BasicUserSerializer.new(user, root: false, include_status: include_status)
         json = serializer.as_json
 
         expect(json[:status]).to_not be_nil do |status|
@@ -55,24 +56,10 @@ RSpec.describe BasicUserSerializer do
         end
       end
 
-      it "doesn't add status when disabled" do
-        include_status = false
-
-        serializer =
-          BasicUserSerializer.new(
-            user,
-            scope: Guardian.new(user),
-            root: false,
-            include_status: include_status,
-          )
-        json = serializer.as_json
-
-        expect(json.keys).not_to include :status
-      end
-
       it "doesn't add expired user status" do
         user.user_status.ends_at = 1.minutes.ago
-        serializer = described_class.new(user, scope: Guardian.new(user), root: false)
+
+        serializer = described_class.new(user, root: false, include_status: true)
         json = serializer.as_json
 
         expect(json.keys).not_to include :status
@@ -81,6 +68,8 @@ RSpec.describe BasicUserSerializer do
       it "doesn't return status if user doesn't have it set" do
         user.clear_status!
         user.reload
+
+        serializer = described_class.new(user, root: false, include_status: true)
         json = serializer.as_json
 
         expect(json.keys).not_to include :status
@@ -91,15 +80,7 @@ RSpec.describe BasicUserSerializer do
       before { SiteSetting.enable_user_status = false }
 
       it "doesn't add user status" do
-        include_status = true
-
-        serializer =
-          BasicUserSerializer.new(
-            user,
-            scope: Guardian.new(user),
-            root: false,
-            include_status: include_status,
-          )
+        serializer = BasicUserSerializer.new(user, root: false, include_status: true)
         json = serializer.as_json
 
         expect(json.keys).not_to include :status
