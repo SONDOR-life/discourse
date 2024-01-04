@@ -42,6 +42,6 @@ class BasicUserSerializer < ApplicationSerializer
   end
 
   def status
-    UserStatusSerializer.new(user.user_status, root: false)
+    UserStatusSerializer.new(user.user_status, root: false).as_json
   end
 end
