@@ -11,6 +11,11 @@ module Chat
                :deleted_at,
                :mentioned_users
 
+    def initialize(object, options = nil)
+      super
+      options[:include_status] = true
+    end
+
     def excerpt
       object.censored_excerpt
     end

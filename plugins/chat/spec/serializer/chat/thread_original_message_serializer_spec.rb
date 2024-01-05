@@ -6,7 +6,7 @@ RSpec.describe Chat::ThreadOriginalMessageSerializer do
   describe "#user" do
     fab!(:user_status) { Fabricate(:user_status) }
     fab!(:user) { Fabricate(:user, user_status: user_status) }
-    fab!(:message) { Fabricate(:chat_message, user: user, message: "Hi there") }
+    fab!(:message) { Fabricate(:chat_message, user: user) }
 
     subject(:serializer) { described_class.new(message, root: nil) }
 
