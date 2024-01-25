@@ -82,6 +82,7 @@ import {
   mergeSettings,
 } from "discourse/tests/helpers/site-settings";
 import { clearExtraHeaderIcons } from "discourse/widgets/header";
+import { clearExtraHeaderIcons as clearExtraGlimmerHeaderIcons } from "discourse/components/glimmer-header/icons";
 import { resetDecorators as resetPostCookedDecorators } from "discourse/widgets/post-cooked";
 import { resetPostMenuExtraButtons } from "discourse/widgets/post-menu";
 import {
@@ -229,6 +230,7 @@ export function testCleanup(container, app) {
   resetNotificationTypeRenderers();
   resetSidebarPanels();
   clearExtraHeaderIcons();
+  clearExtraGlimmerHeaderIcons();
   resetOnKeyDownCallbacks();
   resetOnKeyUpCallbacks();
   resetItemSelectCallbacks();
