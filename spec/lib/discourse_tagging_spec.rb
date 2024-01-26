@@ -6,7 +6,7 @@ require "discourse_tagging"
 # More tests are found in the category_tag_spec integration specs
 
 RSpec.describe DiscourseTagging do
-  fab!(:admin) { Fabricate(:admin, refresh_auto_groups: true) }
+  fab!(:admin) { Fabricate(:admin) }
   fab!(:user)
   let(:admin_guardian) { Guardian.new(admin) }
   let(:guardian) { Guardian.new(user) }
