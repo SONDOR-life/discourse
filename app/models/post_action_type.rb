@@ -100,6 +100,7 @@ class PostActionType < ActiveRecord::Base
         notify_type: true,
         custom_type: true,
       )
+      @flag_settings.add(9, :illegal, topic_type: true, notify_type: true, custom_type: true)
     end
   end
 
