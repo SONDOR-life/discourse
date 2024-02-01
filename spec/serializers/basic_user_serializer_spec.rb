@@ -44,35 +44,31 @@ RSpec.describe BasicUserSerializer do
         expect(json.keys).not_to include :status
       end
 
-      it "adds status if `include_status: true` has been passed" do
-        include_status = true
+      context "when including user status" do
+        let(:serializer) { BasicUserSerializer.new(user, root: false, include_status: true) }
 
-        serializer = BasicUserSerializer.new(user, root: false, include_status: include_status)
-        json = serializer.as_json
-
-        expect(json[:status]).to_not be_nil do |status|
-          expect(status.description).to eq(user_status.description)
-          expect(status.emoji).to eq(user_status.emoji)
+        it "adds status if `include_status: true` has been passed" do
+          json = serializer.as_json
+          expect(json[:status]).to_not be_nil do |status|
+            expect(status.description).to eq(user_status.description)
+            expect(status.emoji).to eq(user_status.emoji)
+          end
         end
-      end
 
-      it "doesn't add expired user status" do
-        user.user_status.ends_at = 1.minutes.ago
+        it "doesn't add expired user status" do
+          user.user_status.ends_at = 1.minutes.ago
+          json = serializer.as_json
+          expect(json.keys).not_to include :status
+        end
 
-        serializer = described_class.new(user, root: false, include_status: true)
-        json = serializer.as_json
+        it "doesn't return status if user doesn't have it set" do
+          user.clear_status!
+          user.reload
 
-        expect(json.keys).not_to include :status
-      end
+          json = serializer.as_json
 
-      it "doesn't return status if user doesn't have it set" do
-        user.clear_status!
-        user.reload
-
-        serializer = described_class.new(user, root: false, include_status: true)
-        json = serializer.as_json
-
-        expect(json.keys).not_to include :status
+          expect(json.keys).not_to include :status
+        end
       end
     end
 
