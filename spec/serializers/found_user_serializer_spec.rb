@@ -34,31 +34,40 @@ RSpec.describe FoundUserSerializer do
 
     context "when status is enabled in site settings" do
       before { SiteSetting.enable_user_status = true }
-      let(:serializer) { FoundUserSerializer.new(user, root: false, include_status: true) }
 
-      it "adds user status when enabled" do
+      it "doesn't add user status by default" do
+        serializer = FoundUserSerializer.new(user, root: false)
         json = serializer.as_json
+        expect(json.keys).not_to include :status
+      end
 
-        expect(json[:status]).to_not be_nil do |status|
-          expect(status.description).to eq(user_status.description)
-          expect(status.emoji).to eq(user_status.emoji)
+      context "when including user status" do
+        let(:serializer) { FoundUserSerializer.new(user, root: false, include_status: true) }
+
+        it "adds user status when enabled" do
+          json = serializer.as_json
+
+          expect(json[:status]).to_not be_nil do |status|
+            expect(status.description).to eq(user_status.description)
+            expect(status.emoji).to eq(user_status.emoji)
+          end
         end
-      end
 
-      it "doesn't add expired user status" do
-        user.user_status.ends_at = 1.minutes.ago
-        serializer = described_class.new(user, scope: Guardian.new(user), root: false)
-        json = serializer.as_json
+        it "doesn't add expired user status" do
+          user.user_status.ends_at = 1.minutes.ago
+          serializer = described_class.new(user, scope: Guardian.new(user), root: false)
+          json = serializer.as_json
 
-        expect(json.keys).not_to include :status
-      end
+          expect(json.keys).not_to include :status
+        end
 
-      it "doesn't return status if user doesn't have it" do
-        user.clear_status!
-        user.reload
-        json = serializer.as_json
+        it "doesn't return status if user doesn't have it" do
+          user.clear_status!
+          user.reload
+          json = serializer.as_json
 
-        expect(json.keys).not_to include :status
+          expect(json.keys).not_to include :status
+        end
       end
     end
 
