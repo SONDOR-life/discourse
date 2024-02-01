@@ -37,7 +37,9 @@ RSpec.describe Chat::ThreadOriginalMessageSerializer do
           "there should be a mention here, but since we're fabricating objects it doesn't matter",
       )
     end
-    fab!(:chat_mention) { Fabricate(:chat_mention, chat_message: message, user: mentioned_user) }
+    fab!(:chat_mention) do
+      Fabricate(:user_chat_mention, chat_message: message, user: mentioned_user)
+    end
 
     subject(:serializer) { described_class.new(message, root: nil) }
 
